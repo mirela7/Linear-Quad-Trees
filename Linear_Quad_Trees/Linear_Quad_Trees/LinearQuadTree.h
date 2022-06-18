@@ -35,6 +35,8 @@ public:
 		void createMortonCode(std::pair<int, int>);
 		long long createFinalMortonCode();
 
+		friend std::ostream& operator<<(std::ostream& g, MortonBlock b);
+
 	};
 	
 	vector<MortonBlock> LQT;

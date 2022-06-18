@@ -14,7 +14,11 @@ BpTree::BpTree()
 void BpTree::insert(MortonBlock b)
 {
 	if (root == nullptr) {
-		root = new BpTree::Node(BpTree::Node::State::LEAF, b.code, b);
+		//root = new BpTree::Node(BpTree::Node::State::LEAF, b.code, b);
+		root = new BpTree::Node(BpTree::Node::State::LEAF);
+		root->keys.push_back(b.code);
+		root->links.data.dataBlocks.push_back(b);
+		root->links.data.next = nullptr;
 		return;
 	}
 	BpTree::Node* act = root;
@@ -22,6 +26,10 @@ void BpTree::insert(MortonBlock b)
 	
 	while (true) {
 		if (act->isFull()) {
+			std::cout << "Entered splitting proccess of \n";
+			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
+				std::cout << act->links.data.dataBlocks.at(i) << " ";
+			std::cout << "\n";
 			int mid = act->keys.size() / 2;
 			
 			BpTree::Node* parent;
@@ -29,27 +37,61 @@ void BpTree::insert(MortonBlock b)
 			else {
 				parent = new BpTree::Node(BpTree::Node::State::INTERNAL);
 			}
-			
-			BpTree::Node* left = new BpTree::Node(act->role);
-			BpTree::Node* right = new BpTree::Node(act->role);
-			left->parent = parent;
-			right->parent = parent;
 
+
+			std::cout << "Checking act state 1:\n";
+			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
+				std::cout << act->links.data.dataBlocks.at(i) << " ";
+			std::cout << "\n";
+
+			BpTree::Node::State newstate = act->role;
+			std::cout << "Checking act state 2.0:\n";
+			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
+				std::cout << act->links.data.dataBlocks.at(i) << " ";
+			std::cout << "\n";
+			BpTree::Node* left = new BpTree::Node(newstate);
+			std::cout << "Checking act state 2.1:\n";
+			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
+				std::cout << act->links.data.dataBlocks.at(i) << " ";
+			std::cout << "\n";
+			BpTree::Node* right = new BpTree::Node(newstate);
+			std::cout << "Checking act state 2.2:\n";
+			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
+				std::cout << act->links.data.dataBlocks.at(i) << " ";
+			std::cout << "\n";
+			left->parent = parent;
+			std::cout << "Checking act state 2.3:\n";
+			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
+				std::cout << act->links.data.dataBlocks.at(i) << " ";
+			std::cout << "\n";
+			right->parent = parent;
+			
+			std::cout << "Checking act state 2--:\n";
+			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
+				std::cout << act->links.data.dataBlocks.at(i) << " ";
+			std::cout << "\n";
+			
 			left->keys = elementsInRange(act->keys, 0, mid - 1);
 			right->keys = elementsInRange(act->keys, (act->role==BpTree::Node::State::LEAF) ? mid : (mid + 1), act->keys.size() - 1);
 			parent->keys.insert(parent->keys.begin() + indexInDescent, act->keys[mid]);
 			
+			
+
 			if (parent->role == BpTree::Node::State::INTERNAL) {
 				parent->links.children.popAt(indexInDescent);
 				parent->links.children.insert(indexInDescent, right);
 				parent->links.children.insert(indexInDescent, left);
 			}
-			
+
 			if (act->role == BpTree::Node::State::INTERNAL) {
 				moveChildren(act, left, 0, mid);
 				moveChildren(act, right, mid + 1, maxKeys);
 			}
 			else {
+				std::cout << "Sending for ranger:\n";
+				for (int i = 0; i < act->links.data.dataBlocks.size; i++)
+					std::cout << act->links.data.dataBlocks.at(i) << " ";
+				std::cout << "\n";
 				left->links.data.dataBlocks = elementsInRange(act->links.data.dataBlocks, 0, mid-1);
 				right->links.data.dataBlocks = elementsInRange(act->links.data.dataBlocks, mid, maxKeys-1);
 				left->links.data.next = right;
@@ -66,60 +108,11 @@ void BpTree::insert(MortonBlock b)
 			act = parent;
 			delete todel;
 
+			std::cout << "SPLIT \n";
+			std::cout << *this << "\n";
+			std::cout << "----";
+
 		}
-		/*if (act->isFull()) {
-			int mid = act->keys.size() / 2;
-
-			if (!act->parent) {
-				BpTree::Node* newRoot = new BpTree::Node(BpTree::Node::State::INTERNAL);
-				BpTree::Node* leftOfRoot = new BpTree::Node(BpTree::Node::State::INTERNAL);
-				BpTree::Node* rightOfRoot = new BpTree::Node(BpTree::Node::State::INTERNAL);
-				newRoot->keys.push_back(act->keys[mid]);
-				leftOfRoot->keys = elementsInRange(act->keys, 0, mid - 1);
-				rightOfRoot->keys = elementsInRange(act->keys, mid + 1, act->keys.size()-1);
-				newRoot->links.children.push_back(leftOfRoot);
-				newRoot->links.children.push_back(rightOfRoot);
-				leftOfRoot->parent = newRoot;
-				rightOfRoot->parent = newRoot;
-
-				if (act->role == BpTree::Node::State::INTERNAL) {
-					moveChildren(act, leftOfRoot, 0, mid);
-					moveChildren(act, rightOfRoot, mid + 1, act->keys.size());
-				}
-				else {
-					leftOfRoot->role = BpTree::Node::State::LEAF;
-					rightOfRoot->role = BpTree::Node::State::LEAF;
-					leftOfRoot->links.data.first = elementsInRange(act->links.data.first, 0, mid - 1);
-					rightOfRoot->links.data.first = elementsInRange(act->links.data.first, mid, act->keys.size() - 1);
-					rightOfRoot->keys.insert(rightOfRoot->keys.begin(), newRoot->keys[0]);
-					leftOfRoot->links.data.second = rightOfRoot;
-				}
-				root = newRoot;
-			}
-			else {
-				act->parent->keys.insert(act->parent->keys.begin() + indexInDescent, act->keys[mid]);
-				BpTree::Node* leftInsert = new BpTree::Node(act->role);
-				BpTree::Node* rightInsert = new BpTree::Node(act->role);
-				leftInsert->keys = elementsInRange(act->keys, 0, mid - 1);
-				rightInsert->keys = elementsInRange(act->keys, mid+1, act->keys.size()-1);
-				leftInsert->parent = act->parent;
-				rightInsert->parent = act->parent;
-
-				if (act->role == BpTree::Node::State::INTERNAL) {
-					moveChildren(act, leftInsert, 0, mid);
-					moveChildren(act, rightInsert, mid + 1, act->keys.size());
-				}
-				else {
-					leftInsert->links.data.first = elementsInRange(act->links.data.first, 0, mid - 1);
-					rightInsert->links.data.first = elementsInRange(act->links.data.first, mid, act->keys.size()-1);
-					rightInsert->keys.insert(rightInsert->keys.begin(), act->keys[mid]);
-
-				}
-			}
-			BpTree::Node* todel = act;
-			act = act->parent;
-			delete todel;
-		}*/
 		
 		if (act->role == BpTree::Node::State::LEAF) {
 

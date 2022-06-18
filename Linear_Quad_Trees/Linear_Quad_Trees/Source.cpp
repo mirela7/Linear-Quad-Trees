@@ -55,7 +55,8 @@ int main()
 
 	BpTree tree;
 	//vector<int> cds = { 1, 3, 7, 4, 10, 11, 5, 2, 20, 25, 30, 6, 8 };
-	vector<int> cds = {3, 10, 20, 4, 5, 21, 6, 25, 11, 22};
+	//vector<int> cds = {3, 10, 20, 4, 5, 21, 6, 25, 11, 22};
+	vector<int> cds = { 1, 3, 7, 4};
 	int i = 0;
 	for (auto& code : cds)
 	{

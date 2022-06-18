@@ -99,3 +99,9 @@ pair<int, int> LinearQuadTree::MortonBlock::getRowAndColumnFromCombinedCode(long
 
 	return pair<int, int>(r.to_ulong(), c.to_ulong());
 }
+
+std::ostream& operator<<(std::ostream& g, LinearQuadTree::MortonBlock b)
+{
+	g << "MBlock[c: " << b.code << " dep: " << b.dep << "]";
+	return g;
+}

@@ -35,17 +35,20 @@ private:
 			ptr() : children(maxKeys+1) {
 				
 			};
+			ptr(int) {
+
+			};
 			~ptr() {};
 		} links;
 
-		Node(State r = State::INTERNAL, int key = -1, MortonBlock value = NULL, Node* dad = NULL) : links() {
+		Node(State r = State::INTERNAL, int key = -1, MortonBlock value = -1, Node* dad = NULL) : links(1) {
 			role = r;
 			keys.reserve(maxKeys);
-			if(key != -1)
+			/*if(key != -1)
 				keys.push_back(key);
-			if (role == State::LEAF) {
+			if (role == State::LEAF && value.code != -1) {
 				links.data.dataBlocks.push_back(value);
-			}
+			}*/
 			parent = dad;
 		}
 		void addValKey(MortonBlock b) {
@@ -103,8 +106,16 @@ inline std::vector<T> BpTree::elementsInRange(std::vector<T>& of, int posFirst, 
 template<class T>
 StaticVector<T> BpTree::elementsInRange(StaticVector<T>& of, int posFirst, int posLast)
 {
+	std::cout << "elements In Range: " << posFirst << " -> " << posLast << "\nCopying: ";
 	StaticVector<T> vec(of.capacity);
 	for (int i = posFirst; i <= posLast; i++)
-		vec.push_back(of[i]);
+	{
+		std::cout << of.at(i) << " ";
+		vec.push_back(of.at(i));
+	}
+	std::cout << "\nReveived:\n";
+	for (int i = 0; i < vec.size; i++)
+		std::cout << vec.at(i) << " ";
+	std::cout << "\n-----------\n";
 	return vec;
 }

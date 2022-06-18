@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 
 template<class T>
 class StaticVector
@@ -15,7 +16,7 @@ public:
 		else if(capacity != cpy.capacity) {
 			if (capacity != 0) delete[] vec;
 			capacity = cpy.capacity;
-			vec = new T[capacity];
+			vec = new T[capacity+5];
 			size = cpy.size;
 		}
 		size = cpy.size;
@@ -42,6 +43,9 @@ public:
 	}
 	
 	void insert(int pos, T who) {
+		if (pos > size) {
+			std::cout << "illegal insertion";
+		}
 		for (int i = size; i > pos; --i)
 			vec[i] = vec[i - 1];
 		vec[pos] = who;
@@ -49,10 +53,12 @@ public:
 	}
 
 	T& operator[](int pos) {
+		if (pos < 0 || pos >= size) std::cout << "index out of bounds";
 		return vec[pos];
 	}
 
 	T at(int pos) {
+		if (pos < 0 || pos >= size) std::cout << "index out of bounds";
 		return vec[pos];
 	}
 
@@ -71,7 +77,9 @@ public:
 	}
 
 	void push_back(T who) {
-		vec[size++] = who;
+		if (size < capacity)
+			vec[size++] = who;
+		else std::cout << "illegal push_back";
 	}
 
 	void popAt(int pos) {
