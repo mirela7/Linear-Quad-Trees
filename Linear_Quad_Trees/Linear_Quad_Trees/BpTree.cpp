@@ -26,10 +26,6 @@ void BpTree::insert(MortonBlock b)
 	
 	while (true) {
 		if (act->isFull()) {
-			std::cout << "Entered splitting proccess of \n";
-			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
-				std::cout << act->links.data.dataBlocks.at(i) << " ";
-			std::cout << "\n";
 			int mid = act->keys.size() / 2;
 			
 			BpTree::Node* parent;
@@ -38,38 +34,11 @@ void BpTree::insert(MortonBlock b)
 				parent = new BpTree::Node(BpTree::Node::State::INTERNAL);
 			}
 
-
-			std::cout << "Checking act state 1:\n";
-			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
-				std::cout << act->links.data.dataBlocks.at(i) << " ";
-			std::cout << "\n";
-
 			BpTree::Node::State newstate = act->role;
-			std::cout << "Checking act state 2.0:\n";
-			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
-				std::cout << act->links.data.dataBlocks.at(i) << " ";
-			std::cout << "\n";
 			BpTree::Node* left = new BpTree::Node(newstate);
-			std::cout << "Checking act state 2.1:\n";
-			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
-				std::cout << act->links.data.dataBlocks.at(i) << " ";
-			std::cout << "\n";
 			BpTree::Node* right = new BpTree::Node(newstate);
-			std::cout << "Checking act state 2.2:\n";
-			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
-				std::cout << act->links.data.dataBlocks.at(i) << " ";
-			std::cout << "\n";
 			left->parent = parent;
-			std::cout << "Checking act state 2.3:\n";
-			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
-				std::cout << act->links.data.dataBlocks.at(i) << " ";
-			std::cout << "\n";
 			right->parent = parent;
-			
-			std::cout << "Checking act state 2--:\n";
-			for (int i = 0; i < act->links.data.dataBlocks.size; i++)
-				std::cout << act->links.data.dataBlocks.at(i) << " ";
-			std::cout << "\n";
 			
 			left->keys = elementsInRange(act->keys, 0, mid - 1);
 			right->keys = elementsInRange(act->keys, (act->role==BpTree::Node::State::LEAF) ? mid : (mid + 1), act->keys.size() - 1);
@@ -88,10 +57,6 @@ void BpTree::insert(MortonBlock b)
 				moveChildren(act, right, mid + 1, maxKeys);
 			}
 			else {
-				std::cout << "Sending for ranger:\n";
-				for (int i = 0; i < act->links.data.dataBlocks.size; i++)
-					std::cout << act->links.data.dataBlocks.at(i) << " ";
-				std::cout << "\n";
 				left->links.data.dataBlocks = elementsInRange(act->links.data.dataBlocks, 0, mid-1);
 				right->links.data.dataBlocks = elementsInRange(act->links.data.dataBlocks, mid, maxKeys-1);
 				left->links.data.next = right;
@@ -109,7 +74,7 @@ void BpTree::insert(MortonBlock b)
 			delete todel;
 
 			std::cout << "SPLIT \n";
-			std::cout << *this << "\n";
+			//std::cout << *this << "\n";
 			std::cout << "----";
 
 		}

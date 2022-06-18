@@ -6,7 +6,7 @@ class BpTree
 {
 private:
 	typedef LinearQuadTree::MortonBlock MortonBlock;
-	const static inline int branchFactor = 2;
+	const static inline int branchFactor = 5;
 	const static inline int minKeys = branchFactor - 1;
 	const static inline int maxKeys = 2*branchFactor - 1;
 
@@ -28,11 +28,13 @@ private:
 				next = nullptr;
 			}
 		};
-		struct ptr {
+		union ptr {
 			StaticVector<Node*> children;
 			NodeData data;
 
-			ptr() : children(maxKeys+1) {
+			ptr() {
+				new(&children) StaticVector<Node*>(maxKeys + 1);
+				new (&data) NodeData;
 				
 			};
 			ptr(int) {
@@ -106,16 +108,10 @@ inline std::vector<T> BpTree::elementsInRange(std::vector<T>& of, int posFirst, 
 template<class T>
 StaticVector<T> BpTree::elementsInRange(StaticVector<T>& of, int posFirst, int posLast)
 {
-	std::cout << "elements In Range: " << posFirst << " -> " << posLast << "\nCopying: ";
 	StaticVector<T> vec(of.capacity);
 	for (int i = posFirst; i <= posLast; i++)
 	{
-		std::cout << of.at(i) << " ";
 		vec.push_back(of.at(i));
 	}
-	std::cout << "\nReveived:\n";
-	for (int i = 0; i < vec.size; i++)
-		std::cout << vec.at(i) << " ";
-	std::cout << "\n-----------\n";
 	return vec;
 }
