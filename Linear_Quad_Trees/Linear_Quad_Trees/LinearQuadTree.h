@@ -26,12 +26,15 @@ public:
 	public:
 		bitset<MAX_BITS> depth;
 		int code, dep;
+		MortonBlock() { code = 0; dep = 0; }
 		MortonBlock(int c): code(c){}
 		MortonBlock(std::pair<int, int>, int depth, int);
+		MortonBlock(const MortonBlock&);
 		pair<int, int> getRowAndColumn();
 		static pair<int, int> getRowAndColumnFromCombinedCode(long long);
 		void createMortonCode(std::pair<int, int>);
 		long long createFinalMortonCode();
+
 	};
 	
 	vector<MortonBlock> LQT;

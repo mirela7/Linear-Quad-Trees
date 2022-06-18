@@ -75,6 +75,17 @@ LinearQuadTree::MortonBlock::MortonBlock(std::pair<int, int> pos, int d, int c)
 	dep = d;
 }
 
+LinearQuadTree::MortonBlock::MortonBlock(const MortonBlock& cpy)
+{
+	for (int i = 0; i < MAX_BITS; ++i) {
+		row[i] = cpy.row[i];
+		column[i] = cpy.column[i];
+		depth[i] = cpy.depth[i];
+	}
+	code = cpy.code;
+	dep = cpy.dep;
+}
+
 
 pair<int, int> LinearQuadTree::MortonBlock::getRowAndColumnFromCombinedCode(long long cod)
 {
