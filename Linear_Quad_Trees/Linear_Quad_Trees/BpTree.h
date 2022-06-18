@@ -75,6 +75,8 @@ private:
 		}
 	}*root;
 
+	
+
 	template<class T>
 	std::vector<T> elementsInRange(std::vector<T>& of,int posFirst, int posLast);
 
@@ -84,11 +86,53 @@ private:
 	void moveChildren(Node* from, Node* newParent, int start, int to);
 
 public:
+	struct dummy_iterator {
+		BpTree::Node* in;
+		int index = 0;
+
+		dummy_iterator(Node* nod, int idx = 0) {
+			in = nod;
+			index = idx;
+		}
+		dummy_iterator(const dummy_iterator& it) {
+			in = it.in;
+			index = it.index;
+		}
+
+		dummy_iterator operator++() {
+			if (in->links.data.next) {
+				if (index < in->links.data.dataBlocks.size - 1)
+					index++;
+				else {
+					in = in->links.data.next;
+					index = 0;
+				}
+			}
+			else index++;
+			return *this;
+		}
+
+		MortonBlock operator*() {
+			return in->links.data.dataBlocks.at(index);
+		}
+
+		bool operator!=(dummy_iterator& other) {
+			return !(in == other.in && index == other.index);
+		}
+		bool operator==(dummy_iterator& other) {
+			return in == other.in && index == other.index;
+		}
+	};
+
+	dummy_iterator begin();
+	dummy_iterator end();
+
 
 	BpTree();
 	BpTree(std::vector<MortonBlock> blocks);
-	void feed(std::vector<MortonBlock> blocks);
-	Node* find(int key);
+	dummy_iterator leftest();
+	dummy_iterator rightest();
+	dummy_iterator find(int key);
 	void insert(MortonBlock b);
 	void deconstruct();
 	~BpTree();

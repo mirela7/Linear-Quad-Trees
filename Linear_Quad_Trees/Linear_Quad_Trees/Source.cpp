@@ -54,10 +54,10 @@ int main()
 
 
 	BpTree tree;
-	vector<int> cds;
-	for (int i = 1; i <= 12 * 12; i++)
-		cds.push_back(i);
-	//vector<int> cds = {3, 10, 20, 4, 5, 21, 6, 25, 11, 22};
+	//vector<int> cds;
+	//for (int i = 1; i <= 12 * 12; i++)
+	//	cds.push_back(i);
+	vector<int> cds = {3, 10, 20, 4, 5, 21, 6, 25, 11, 22};
 	//vector<int> cds = { 1, 3, 7, 4};
 	int i = 0;
 	for (auto& code : cds)
@@ -71,8 +71,13 @@ int main()
 		//tree.displayLeavesInAscendingOrder();
 		i++;
 	}
-	std::cout << tree;
-	std::cout << "\n\n";
-	tree.displayLeavesInAscendingOrder();
+	//std::cout << tree;
+	//std::cout << "\n\n";
+	//tree.displayLeavesInAscendingOrder();
+	BpTree::dummy_iterator en = tree.find(22);
+	std::cout << *en;
+	for (auto it = tree.find(5); it != en; ++it)
+		std::cout << *it << "\n";
+	//std::cout << *tree.leftest() << "\n" << *tree.rightest();
 	return 0;
 }

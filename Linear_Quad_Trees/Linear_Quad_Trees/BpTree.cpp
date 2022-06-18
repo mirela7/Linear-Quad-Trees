@@ -7,9 +7,47 @@ void BpTree::moveChildren(Node* from, Node* newParent, int start, int to)
 		from->links.children[i]->parent = newParent;
 	}
 }
+BpTree::dummy_iterator BpTree::begin()
+{
+	return leftest();
+}
+BpTree::dummy_iterator BpTree::end()
+{
+	dummy_iterator righ = rightest();
+	righ.index++;
+	return righ;
+}
 BpTree::BpTree()
 {
 	root = nullptr;
+}
+BpTree::dummy_iterator BpTree::leftest()
+{
+	Node* act = root;
+	while (act->role != BpTree::Node::State::LEAF)
+		act = act->links.children[0];
+	return dummy_iterator(act, 0);
+}
+BpTree::dummy_iterator BpTree::rightest()
+{
+	Node* act = root;
+	while (act->role != BpTree::Node::State::LEAF)
+		act = act->links.children[act->links.children.size-1];
+	return dummy_iterator(act, act->keys.size()-1);
+}
+BpTree::dummy_iterator BpTree::find(int key)
+{
+	int indexInDescent;
+	BpTree::Node* act = root;
+	while (act->role != BpTree::Node::State::LEAF)
+	{
+		auto it = std::upper_bound(act->keys.begin(), act->keys.end(), key);
+		indexInDescent = std::distance(act->keys.begin(), it);
+		act = act->links.children[indexInDescent];
+	}
+	auto it = std::lower_bound(act->keys.begin(), act->keys.end(), key);
+	indexInDescent = std::distance(act->keys.begin(), it);
+	return dummy_iterator(act, indexInDescent);
 }
 void BpTree::insert(MortonBlock b)
 {
@@ -72,10 +110,6 @@ void BpTree::insert(MortonBlock b)
 			Node* todel = act;
 			act = parent;
 			delete todel;
-
-			std::cout << "SPLIT \n";
-			//std::cout << *this << "\n";
-			std::cout << "----";
 
 		}
 		
