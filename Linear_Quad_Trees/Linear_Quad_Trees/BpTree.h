@@ -41,7 +41,7 @@ private:
 			~ptr() {};
 		} links;
 
-		Node(State r = State::INTERNAL, int key = -1, MortonBlock value = -1, Node* dad = NULL) : links(1) {
+		Node(State r = State::INTERNAL, int key = -1, MortonBlock value = -1, Node* dad = NULL) : links() {
 			role = r;
 			keys.reserve(maxKeys);
 			/*if(key != -1)

@@ -62,14 +62,14 @@ int main()
 	{
 		LinearQuadTree::MortonBlock mb({i, i}, code, code);
 		tree.insert(mb);
-		std::cout << tree;
-		std::cout << "\n-----\n";
+		/*std::cout << tree;
+		sd::cout << "\n-----\n";
 		
-		std::cout << "\n";
+		std::cout << "\n";*/
 		i++;
 	}
-	std::cout << tree;
+	/*std::cout << tree;
 	std::cout << "\n\n";
-	tree.displayLeavesInAscendingOrder();
+	tree.displayLeavesInAscendingOrder();*/
 	return 0;
 }
