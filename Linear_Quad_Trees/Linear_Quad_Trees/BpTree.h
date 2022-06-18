@@ -28,7 +28,7 @@ private:
 				next = nullptr;
 			}
 		};
-		union ptr {
+		struct ptr {
 			StaticVector<Node*> children;
 			NodeData data;
 
