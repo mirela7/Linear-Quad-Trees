@@ -46,11 +46,6 @@ private:
 		Node(State r = State::INTERNAL, int key = -1, MortonBlock value = -1, Node* dad = NULL) : links() {
 			role = r;
 			keys.reserve(maxKeys);
-			/*if(key != -1)
-				keys.push_back(key);
-			if (role == State::LEAF && value.code != -1) {
-				links.data.dataBlocks.push_back(value);
-			}*/
 			parent = dad;
 		}
 		void addValKey(MortonBlock b) {
@@ -146,96 +141,9 @@ public:
 	void DFS(BpTree::Node*, std::deque<BpTree::Node*>&);
 	void displayLeavesInAscendingOrder();
 	
-	static bool enclosed(vector<pair<int, int>> w, long long b, int len) { 
-		// is b enclosed in w?
-		// w -> NW, NE, SE, SW
-		pair<int, int> poz = LinearQuadTree::MortonBlock::getRowAndColumnFromCombinedCode((b>>4));
-		if (poz.first >= w[0].first && poz.first <= w[2].first && poz.first + len -1 >= w[0].first && poz.first + len -1<= w[2].first)
-			if (poz.second >= w[0].second && poz.second <= w[2].second && poz.second + len -1 >= w[0].second && poz.second + len -1 <= w[2].second)
-				return true;
-		return false;
-	}
-
-	static bool intersects(vector<pair<int, int>> w, long long b, int len) {
-		// is b enclosed in w?
-		// w -> NW, NE, SE, SW
-		pair<int, int> poz = LinearQuadTree::MortonBlock::getRowAndColumnFromCombinedCode((b >> 4));
-		int depth = b & 15;
-		if (poz.second >= w[2].second)
-			return false;
-		if (poz.second + len <= w[0].second)
-			return false;
-		if (poz.first + len <= w[0].first)
-			return false;
-		if (poz.first >= w[2].first)
-			return false;
-		return true;
-	}
-	vector<MortonBlock> windowQueryProcessing(vector<pair<int, int>> w, int dimImg, long long bin=0) {
-		stack<long long> S;
-		vector<MortonBlock> sol;
-		S.push(bin);
-		while (!S.empty()) {
-			long long b = S.top(); S.pop();
-			int dep = b & 15;
-			int len_block = 1 << ((int)log2(dimImg) - dep);
-			if (enclosed(w, b, len_block))
-			{
-				
-				pair<int, int> poz = LinearQuadTree::MortonBlock::getRowAndColumnFromCombinedCode((b >> 4));
-				long long code1 = LinearQuadTree::MortonBlock::getCode({poz.first + len_block-1, poz.second + len_block-1});
-				long long Mbmax = (code1 << 4) | 15;
-				// retrieve blocks b - Mbmax
-				auto it = find(b);
-				if (it!=end() && !it.isValid())
-					++it;
-				while (it.isValid() && it!=end() && it.in->keys[it.index] < Mbmax) {
-					sol.push_back(it.in->links.data.dataBlocks.at(it.index));
-					++it;
-				}
-				
-
-			}
-			else {
-				// search b in database
-
-				pair<int, int> poz = LinearQuadTree::MortonBlock::getRowAndColumnFromCombinedCode((b >> 4));
-				auto it = find(b);
-				if (it.isValid() && it!=end() && it.in->keys[it.index] == b) {
-					sol.push_back(it.in->links.data.dataBlocks.at(it.index));
-					continue;
-				}
-				long long bCodeKid;
-				//SE kid
-				bCodeKid = ((LinearQuadTree::MortonBlock::getCode({ poz.first + len_block / 2, poz.second + len_block / 2 }) << 4) | (dep + 1));
-				if (intersects(w, bCodeKid, len_block / 2)) {
-					S.push(bCodeKid);
-				}
-
-				//SW kid
-				bCodeKid = ((LinearQuadTree::MortonBlock::getCode({ poz.first + len_block / 2  , poz.second }) << 4) | (dep + 1));
-				if (intersects(w, bCodeKid, len_block / 2)) {
-					S.push(bCodeKid);
-				}
-
-				//NE kid
-				bCodeKid = ((LinearQuadTree::MortonBlock::getCode({ poz.first, poz.second + len_block / 2 }) << 4) | (dep + 1));
-				if (intersects(w, bCodeKid, len_block / 2)) {
-					S.push(bCodeKid);
-				}
-
-				// NW kid
-				bCodeKid = ((LinearQuadTree::MortonBlock::getCode({ poz.first, poz.second })<<4) | (dep+1));
-				if (intersects(w, bCodeKid, len_block/2)) {
-					S.push(bCodeKid);
-				}
-				
-
-			}
-		}
-		return sol;
-	}
-
+	static bool enclosed(vector<pair<int, int>> w, long long b, int len);
+	static bool intersects(vector<pair<int, int>> w, long long b, int len);
+	vector<MortonBlock> windowQueryProcessing(vector<pair<int, int>> w, int dimImg, long long bin = 0);
 
 	friend std::ostream& operator<<(std::ostream& g, BpTree& tree);
 };
