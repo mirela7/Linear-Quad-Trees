@@ -112,6 +112,12 @@ public:
 			return *this;
 		}
 
+		bool isValid() {
+			if (index >= 0 && index < in->keys.size())
+				return true;
+			return false;
+		}
+
 		MortonBlock operator*() {
 			return in->links.data.dataBlocks.at(index);
 		}
@@ -181,7 +187,9 @@ public:
 				long long Mbmax = (code1 << 4) | 15;
 				// retrieve blocks b - Mbmax
 				auto it = find(b);
-				while (it!=end() && it.in->keys[it.index] < Mbmax) {
+				if (it!=end() && !it.isValid())
+					++it;
+				while (it.isValid() && it!=end() && it.in->keys[it.index] < Mbmax) {
 					sol.push_back(it.in->links.data.dataBlocks.at(it.index));
 					++it;
 				}
@@ -193,7 +201,7 @@ public:
 
 				pair<int, int> poz = LinearQuadTree::MortonBlock::getRowAndColumnFromCombinedCode((b >> 4));
 				auto it = find(b);
-				if (it!=end() && it.in->keys[it.index] == b) {
+				if (it.isValid() && it!=end() && it.in->keys[it.index] == b) {
 					sol.push_back(it.in->links.data.dataBlocks.at(it.index));
 					continue;
 				}

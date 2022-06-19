@@ -175,7 +175,7 @@ void BpTree::displayLeavesInAscendingOrder()
 	{
 		std::cout << "(";
 		for (int i = 0; i < act->links.data.dataBlocks.size; i++)
-			std::cout << "<c: " << act->links.data.dataBlocks.at(i).code << " d" << act->links.data.dataBlocks.at(i).dep << "> ";
+			std::cout << "<MD: " << act->links.data.dataBlocks.at(i).code << " d" << act->links.data.dataBlocks.at(i).dep << " BC:" << act->links.data.dataBlocks.at(i).bindex << "> ";
 		std::cout << ")";
 		act = act->links.data.next;
 	}

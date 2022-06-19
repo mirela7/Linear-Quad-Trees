@@ -30,7 +30,7 @@ LinearQuadTree::LinearQuadTree(Mat img)
 			for (int j = 0; j <= 3; j++) {
 				auto poz = MortonBlock::getRowAndColumnFromCombinedCode(i + j);
 				if (img.at<unsigned char>(poz.first, poz.second) == 0)
-					LQT.emplace_back(poz, log2(size)-1, i+j);
+					LQT.emplace_back(poz, log2(size), i+j);
 			}
 		}
 
