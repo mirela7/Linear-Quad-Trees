@@ -51,6 +51,7 @@ LinearQuadTree::LinearQuadTree(Mat img)
 				if (ok == true) {
 					MortonBlock compressed = LQT[len - 3];
 					compressed.dep -= 1; compressed.depth = bitset<MAX_BITS>(compressed.dep);
+					compressed.bindex -= 1; // check?
 					// pop the kids
 					for (int i = 0; i < 4; i++, LQT.pop_back());
 
@@ -73,6 +74,8 @@ LinearQuadTree::MortonBlock::MortonBlock(std::pair<int, int> pos, int d, int c)
 	depth = bitset<MAX_BITS>(d);
 	code = c;
 	dep = d;
+	auto help = bitset<MAX_BITS * 2>(((1LL*c)<<4)) | bitset<MAX_BITS*2>(d);
+	bindex = help.to_ullong();
 }
 
 LinearQuadTree::MortonBlock::MortonBlock(const MortonBlock& cpy)
@@ -84,6 +87,7 @@ LinearQuadTree::MortonBlock::MortonBlock(const MortonBlock& cpy)
 	}
 	code = cpy.code;
 	dep = cpy.dep;
+	bindex = cpy.bindex;
 }
 
 
@@ -98,6 +102,20 @@ pair<int, int> LinearQuadTree::MortonBlock::getRowAndColumnFromCombinedCode(long
 	}
 
 	return pair<int, int>(r.to_ulong(), c.to_ulong());
+}
+
+long long LinearQuadTree::MortonBlock::getCode(pair<int, int> a)
+{
+	auto help = bitset<MAX_BITS>(a.first);
+	auto help2 = bitset<MAX_BITS>(a.second);
+	bitset<2*MAX_BITS> help3;
+	int aux = MAX_BITS-1;
+	for (int i = 2 * MAX_BITS-1; i >= 0; i-=2) {
+		help3[i] = help[aux];
+		help3[i-1] = help2[aux];
+		aux--;
+	}
+	return help3.to_ulong();
 }
 
 std::ostream& operator<<(std::ostream& g, LinearQuadTree::MortonBlock b)

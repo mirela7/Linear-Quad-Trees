@@ -1,4 +1,5 @@
 #include "BpTree.h"
+
 void BpTree::moveChildren(Node* from, Node* newParent, int start, int to)
 {
 	for (int i = start; i <= to; ++i)
@@ -7,16 +8,19 @@ void BpTree::moveChildren(Node* from, Node* newParent, int start, int to)
 		from->links.children[i]->parent = newParent;
 	}
 }
+
 BpTree::dummy_iterator BpTree::begin()
 {
 	return leftest();
 }
+
 BpTree::dummy_iterator BpTree::end()
 {
 	dummy_iterator righ = rightest();
 	righ.index++;
 	return righ;
 }
+
 BpTree::BpTree()
 {
 	root = nullptr;
@@ -35,7 +39,7 @@ BpTree::dummy_iterator BpTree::rightest()
 		act = act->links.children[act->links.children.size-1];
 	return dummy_iterator(act, act->keys.size()-1);
 }
-BpTree::dummy_iterator BpTree::find(int key)
+BpTree::dummy_iterator BpTree::find(long long key)
 {
 	int indexInDescent;
 	BpTree::Node* act = root;
@@ -46,6 +50,8 @@ BpTree::dummy_iterator BpTree::find(int key)
 		act = act->links.children[indexInDescent];
 	}
 	auto it = std::lower_bound(act->keys.begin(), act->keys.end(), key);
+	//if (*it != key)
+	//	return dummy_iterator(act, -1);
 	indexInDescent = std::distance(act->keys.begin(), it);
 	return dummy_iterator(act, indexInDescent);
 }
@@ -54,7 +60,7 @@ void BpTree::insert(MortonBlock b)
 	if (root == nullptr) {
 		//root = new BpTree::Node(BpTree::Node::State::LEAF, b.code, b);
 		root = new BpTree::Node(BpTree::Node::State::LEAF);
-		root->keys.push_back(b.code);
+		root->keys.push_back(b.bindex);
 		root->links.data.dataBlocks.push_back(b);
 		root->links.data.next = nullptr;
 		return;
@@ -115,14 +121,14 @@ void BpTree::insert(MortonBlock b)
 		
 		if (act->role == BpTree::Node::State::LEAF) {
 
-			auto it = std::lower_bound(act->keys.begin(), act->keys.end(), b.code);
+			auto it = std::lower_bound(act->keys.begin(), act->keys.end(), b.bindex);
 			int pos = std::distance(act->keys.begin(), it);
-			act->keys.insert(it, b.code);
+			act->keys.insert(it, b.bindex);
 			act->links.data.dataBlocks.insert(pos, b);
 			return;
 		}
 		else {
-			auto it = std::lower_bound(act->keys.begin(), act->keys.end(), b.code);
+			auto it = std::lower_bound(act->keys.begin(), act->keys.end(), b.bindex);
 			indexInDescent = std::distance(act->keys.begin(), it);
 			act = act->links.children[indexInDescent];
 		}
@@ -158,6 +164,7 @@ void BpTree::DFS(BpTree::Node* act, std::deque<Node*>& deq)
 		}
 	}
 }
+
 
 void BpTree::displayLeavesInAscendingOrder()
 {
